@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:6.0
+    container_name: mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password123
+      MONGO_INITDB_DATABASE: auth_db
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - microservices-network
+
+  auth-service:
+    build: ./auth-service
+    container_name: auth-service
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - MONGODB_URI=mongodb://admin:password123@mongodb:27017/auth_db?authSource=admin
+      - JWT_SECRET=your-super-secret-jwt-key-change-in-production
+      - JWT_EXPIRE=24h
+    depends_on:
+      - mongodb
+    networks:
+      - microservices-network
+    volumes:
+      - ./auth-service:/app
+      - /app/node_modules
+
+  api-gateway:
+    build: ./api-gateway
+    container_name: api-gateway
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - AUTH_SERVICE_URL=http://auth-service:3001
+      - JWT_SECRET=your-super-secret-jwt-key-change-in-production
+      - BRIEF_SERVICE_URL=http://brief-service:3002
+      - APPRENANT_SERVICE_URL=http://apprenant-service:3003
+    depends_on:
+      - auth-service
+    networks:
+      - microservices-network
+    volumes:
+      - ./api-gateway:/app
+      - /app/node_modules
+
+volumes:
+  mongodb_data:
+
+networks:
+  microservices-network:
+    driver: bridge

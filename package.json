@@ -1,0 +1,19 @@
+{
+  "name": "microservices-auth-system",
+  "version": "1.0.0",
+  "description": "Secure microservices architecture with Auth-Service and API Gateway",
+  "main": "index.js",
+  "scripts": {
+    "start:auth": "cd auth-service && npm start",
+    "start:gateway": "cd api-gateway && npm start",
+    "dev:auth": "cd auth-service && npm run dev",
+    "dev:gateway": "cd api-gateway && npm run dev",
+    "test": "cd auth-service && npm test && cd ../api-gateway && npm test",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:build": "docker-compose build"
+  },
+  "keywords": ["microservices", "auth", "jwt", "api-gateway", "mongodb"],
+  "author": "404.js",
+  "license": "MIT"
+}
