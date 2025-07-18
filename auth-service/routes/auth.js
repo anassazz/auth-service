@@ -45,4 +45,5 @@ const loginValidation = [
 router.post('/register', registerValidation, validateRequest, authController.register);
 router.post('/login', loginValidation, validateRequest, authController.login);
 
-module.exports = router;
+module.exports = router;  
+
